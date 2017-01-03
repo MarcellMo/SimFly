@@ -1,33 +1,3 @@
-/* Simulink Arduino Block Driver Library for Autocode Generation
- * 
- * This file is part of the Simulink Arduino Block Driver Library 
- * for Autocode Generation with Simulink
- *
- * This Library is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This Library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this Library.  If not, see
- * <http://www.gnu.org/licenses/>.
- *
- */
-
-/**
- * @file arduino_DUE_wrapper.h
- *
- * Wrapper code header for Arduino Due Board
- *
- * @author Marcell Mocher <marcell.mocher@fh-joanneum.at>
- * @details Flight mechanics group FH JOANNEUM Graz
- */
-
 #ifndef _ARDUINO_DUE_WRAPPER_H_
 #define _ARDUINO_DUE_WRAPPER_H_
 #include "rtwtypes.h"
@@ -96,7 +66,7 @@ extern "C" {
      * @param num number of serial port
      * @param val value which should be written
      */
-    void _serial_write(uint8_T num,uint8_T val);
+    void _serial_write(uint8_T num,uint8_T* val,uint8_T length);
     
     /**
      * Calls function SerialX.read()  reads a byte from serial
@@ -202,6 +172,30 @@ extern "C" {
      */
     void _sd_close(void);
     
+    /**
+     * inits the spi bus for pin 52
+     * 
+     */
+    void _spi_52_init(void);
+    
+     /**
+     * inits the spi bus for pin 52
+     * 
+     */
+    uint16_T _spi_52_read(void);
+    
+    
+     /**
+     * initialize output for pin x
+     * 
+     */
+    void oneshot125_init(uint8_T pin);
+    
+    /**
+     * sends a oneshot pwm signal to pin x
+     * 
+     */
+    void oneshot125(uint8_T pin,uint8_T width);
     
 #ifdef __cplusplus
 }

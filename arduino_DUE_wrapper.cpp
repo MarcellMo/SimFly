@@ -1,33 +1,3 @@
-/* Simulink Arduino Block Driver Library for Autocode Generation
- * 
- * This file is part of the Simulink Arduino Block Driver Library 
- * for Autocode Generation with Simulink
- *
- * This Library is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This Library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this Library.  If not, see
- * <http://www.gnu.org/licenses/>.
- *
- */
-
-/**
- * @file arduino_DUE_wrapper.cpp
- *
- * Wrapper code for Arduino Due Board
- *
- * @author Marcell Mocher <marcell.mocher@fh-joanneum.at>
- * @details Flight mechanics group FH JOANNEUM Graz
- */
-
 #include <Arduino.h>
 #include "arduino_DUE_wrapper.h"
 
@@ -99,8 +69,7 @@ extern "C" void _serial_init(uint8_T num, uint32_T baud){
 }
 
 
-extern "C" void _i2c_read_register(uint8_T addr, uint8_T reg,uint8_T len,uint8_T * val) {
-    
+extern "C" void _i2c_read_register(uint8_T addr, uint8_T reg,uint8_T len,uint8_T * val) {  
     Wire.beginTransmission(addr);
     Wire.write(reg);
     Wire.endTransmission();
@@ -111,11 +80,9 @@ extern "C" void _i2c_read_register(uint8_T addr, uint8_T reg,uint8_T len,uint8_T
         }
     }
     return;
-    
 }
 
 extern "C" void _i2c_write_register(uint8_T addr, uint8_T reg,uint8_T val) {
-    
     Wire.beginTransmission(addr);
     Wire.write(reg);
     Wire.write(val);
@@ -143,20 +110,20 @@ extern "C" void _serial_print(uint8_T num,double val){
 }
 
 
-extern "C" void _serial_write(uint8_T num,uint8_T val){
+extern "C" void _serial_write(uint8_T num,uint8_T* val,uint8_T length){
     switch(num)
     {
         case 0:
-            Serial.write(val);
+            Serial.write(val,length);
             break;
         case 1:
-            Serial1.write(val);
+            Serial1.write(val,length);
             break;
         case 2:
-            Serial2.write(val);
+            Serial2.write(val,length);
             break;
         case 3:
-            Serial3.write(val);
+            Serial3.write(val,length);
             break;
     }
     return;
@@ -340,4 +307,33 @@ extern "C" void _led_on_off(uint8_T led, boolean status)
     }
     
     return;
+}
+
+
+extern "C"  void _spi_52_init(void){
+    SPI.begin(52);
+    SPI.setClockDivider(10, 21); //  4Mhz SPI bus transfer speed
+    SPI.setBitOrder(MSBFIRST);
+    SPI.setDataMode(SPI_MODE1);
+}
+
+extern "C"  uint16_T _spi_52_read(void){
+    unsigned int result1 = 0;
+    unsigned int result2 = 0;
+    result1 = SPI.transfer(52, 0b00000000, SPI_CONTINUE);
+    result2 = SPI.transfer(52, 0b00000000);
+    result1 &= 0b00111111; 
+    result1 = result1 << 8;
+    return result1 | result2;
+}
+
+
+extern "C"  void oneshot125_init(uint8_T pin){
+  pinMode(30-pin, OUTPUT);
+}
+
+extern "C"  void oneshot125(uint8_T pin,uint8_T width){
+  digitalWrite(30-pin, HIGH);
+  delayMicroseconds(width);
+  digitalWrite(30-pin, LOW);
 }
